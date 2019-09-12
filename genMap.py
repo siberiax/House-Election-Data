@@ -1,4 +1,4 @@
-import csv
+from csv import reader as csvreader
 from collections import defaultdict
 from bs4 import BeautifulSoup
 
@@ -6,7 +6,7 @@ data16 = defaultdict(list)
 data18 = defaultdict(list)
 
 with open('cleaned.csv') as f:
-    data = csv.reader(f)
+    data = csvreader(f)
     for line in data:
         if line[0] == 'year':
             continue
@@ -23,7 +23,7 @@ with open('cleaned.csv') as f:
         else:
             data18["{}-{}".format(state, dist)].append((party[0], votes/total_votes))
 
-ratios = {}
+ratios = defaultdict(float)
 
 for dist in data18:
     curr = data18[dist]
@@ -36,12 +36,12 @@ for dist in data18:
 
 palette = ["#3c1361", "#52307c", "#7c5295", "#b491c8", "#bac0dc"]
 
-svg = open('Most_even_districts.svg', 'r').read()
+svg = open('US_Congressional_districts.svg', 'r').read()
 soup = BeautifulSoup(svg, features="html.parser")
 
 paths = soup.findAll('path')
 for p in paths:
-    if "Dividing_line" not in p["id"]:
+    if p["id"] in ratios:
         rate = ratios[p["id"]]
         if rate > .9:
             color_class = 0
@@ -54,6 +54,7 @@ for p in paths:
         else:
             color_class = 4
 
-        p["style"] = "fill:{};stroke:#000000;stroke-width:0.333;stroke-opacity:1;fill-opacity:1".format(palette[color_class])
+        p["style"] = "fill:{}".format(palette[color_class])
 
-print (soup.prettify())
+with open("Most_Even_Districts.svg", "w") as out:
+    out.write(soup.prettify())
