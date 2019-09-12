@@ -54,7 +54,7 @@ for p in paths:
         else:
             color_class = 4
 
-        p["style"] = "fill:{}".format(palette[color_class])
+        p["style"] = "fill:{};stroke:#000000;stroke-width:0.333;stroke-opacity:1;fill-opacity:1".format(palette[color_class])
 
 with open("Most_Even_Districts.svg", "w") as out:
     out.write(soup.prettify())
