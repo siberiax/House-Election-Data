@@ -5,23 +5,23 @@ from bs4 import BeautifulSoup
 data16 = defaultdict(list)
 data18 = defaultdict(list)
 
-with open('cleaned.csv') as f:
+with open('data.csv') as f:
     data = csvreader(f)
     for line in data:
         if line[0] == 'year':
             continue
         year = line[0]
-        state = line[2]
-        dist = line[3] if line[3] != '0' else 'AL'
+        state = line[1]
+        dist = line[2] if line[2] != '0' else 'AL'
         if dist.isdigit() and int(dist) < 10:
             dist = "0" + dist
-        party = line[4]
-        votes = int(line[5])
-        total_votes = int(line[6])
+        party = line[3]
+        votes = int(line[4])
+        total_votes = int(line[5])
         if year == "2016":
-            data16["{}-{}".format(state, dist)].append((party[0], votes/total_votes))
+            data16["{}-{}".format(state, dist)].append((party, votes/total_votes))
         else:
-            data18["{}-{}".format(state, dist)].append((party[0], votes/total_votes))
+            data18["{}-{}".format(state, dist)].append((party, votes/total_votes))
 
 ratios = defaultdict(float)
 
@@ -29,7 +29,7 @@ for dist in data16:
     curr = data16[dist]
     if len(curr) == 1:
         party = curr[0][0]
-        if (party == 'd'):
+        if (party == 'D'):
             data16[dist] = -1 * curr[0][1]
         else:
             data16[dist] = curr[0][1]
@@ -37,7 +37,7 @@ for dist in data16:
         rep = 0
         dem = 0
         for party in curr:
-            if party[0] == 'd':
+            if party[0] == 'D':
                 dem = party[1]
             else:
                 rep = party[1]
@@ -47,7 +47,7 @@ for dist in data18:
     curr = data18[dist]
     if len(curr) == 1:
         party = curr[0][0]
-        if (party == 'd'):
+        if (party == 'D'):
             data18[dist] = -1 * curr[0][1]
         else:
             data18[dist] = curr[0][1]
@@ -55,7 +55,7 @@ for dist in data18:
         rep = 0
         dem = 0
         for party in curr:
-            if party[0] == 'd':
+            if party[0] == 'D':
                 dem = party[1]
             else:
                 rep = party[1]
@@ -79,7 +79,7 @@ for p in paths:
         elif rate16 > 0 and rate18 < 0:        # flipped blue
             color_class = 4
         else:
-            if abs(diff) < .1:
+            if abs(diff) < .5:
                 continue
 
             if rate16 < 0 and rate18 < 0:       # stayed blue
